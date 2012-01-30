@@ -26,4 +26,10 @@ public class POSTag {
 		this.name = name;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		POSTag tag = (POSTag) o;
+		return this.name.equalsIgnoreCase(tag.name);
+	}
+
 }

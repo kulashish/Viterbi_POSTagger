@@ -5,11 +5,29 @@ public class ModelParameters {
 	private POSTagSet tagSet;
 	private TransitionMatrix transitionMatrix;
 	private EmissionMatrix emissionMatrix;
+	private InitialProbabilityVector initialProbVec;
 
 	public ModelParameters() {
 		tagSet = new POSTagSet();
 		transitionMatrix = new TransitionMatrix();
 		emissionMatrix = new EmissionMatrix();
+		initialProbVec = new InitialProbabilityVector();
+	}
+
+	public POSTagSet getTagSet() {
+		return tagSet;
+	}
+
+	public TransitionMatrix getTransitionMatrix() {
+		return transitionMatrix;
+	}
+
+	public EmissionMatrix getEmissionMatrix() {
+		return emissionMatrix;
+	}
+
+	public InitialProbabilityVector getInitialProbVec() {
+		return initialProbVec;
 	}
 
 	public void updateParameters(String[] tags, String[] observations) {
@@ -17,9 +35,10 @@ public class ModelParameters {
 		POSTag prevTag = null;
 		Observation observation = null;
 		for (int i = 0; i < tags.length; i++) {
-			tag = new POSTag(tags[i]);
+			tag = tagSet.addTag(tags[i]);
 			observation = new Observation(observations[i]);
-			tagSet.addTag(tag);
+			if (null == prevTag)
+				initialProbVec.addState(tag);
 			if (null != prevTag && null != tag)
 				transitionMatrix.addTransition(prevTag, tag);
 			if (null != tag && null != observation)
@@ -31,6 +50,7 @@ public class ModelParameters {
 	public void updateParameters() {
 		transitionMatrix.computeProbabilities();
 		emissionMatrix.computeProbabilities();
+		initialProbVec.computeProbabilities();
 	}
 
 }

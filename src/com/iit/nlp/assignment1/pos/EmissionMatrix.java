@@ -5,40 +5,125 @@ import java.util.List;
 
 public class EmissionMatrix {
 
-	private List<List<Float>> emissionProbMatrix;
-	private List<Integer> sumList;
+	private List<EmissionMatrixColumnEntry> emissionProbMatrix;
+
+	public int getSize() {
+		return null != emissionProbMatrix ? emissionProbMatrix.size() : 0;
+	}
+
+	public List<EmissionMatrixColumnEntry> getEmissionProbMatrix() {
+		if (null == emissionProbMatrix)
+			emissionProbMatrix = new ArrayList<EmissionMatrixColumnEntry>();
+		return emissionProbMatrix;
+	}
 
 	public void addEmission(POSTag tag, Observation word) {
-		if (null == emissionProbMatrix) {
-			emissionProbMatrix = new ArrayList<List<Float>>();
-			sumList = new ArrayList<Integer>();
-		}
-		int outerIndex = tag.getIndex();
-		if (outerIndex >= emissionProbMatrix.size())
-			emissionProbMatrix.add(outerIndex, null);
+		EmissionMatrixColumnEntry foundColumnEntry = null;
+		for (EmissionMatrixColumnEntry columnEntry : getEmissionProbMatrix())
+			if (columnEntry.getPostag().equals(tag)) {
+				foundColumnEntry = columnEntry;
+				break;
+			}
 
-		List<Float> innerArr = emissionProbMatrix.get(outerIndex);
-		if (null == innerArr)
-			innerArr = new ArrayList<Float>();
-		int innerIndex = word.getIndex();
-		if (innerIndex < innerArr.size()) // word is present
-			innerArr.set(innerIndex, ((float) innerArr.get(innerIndex)) + 1);
-		else
-			innerArr.add(innerIndex, 1f);
-		sumList.add(outerIndex, sumList.get(outerIndex) + 1);
+		if (null == foundColumnEntry) {
+			foundColumnEntry = new EmissionMatrixColumnEntry(tag);
+			emissionProbMatrix.add(foundColumnEntry);
+		}
+
+		foundColumnEntry.addTransition(word);
 	}
-	
-	public void computeProbabilities()	{
-//		int numTags = transitionProbMatrix.size();
-//		float[][] transitionProbArr = (float[][]) transitionProbMatrix
-//				.toArray(new float[numTags][numTags]);
-//		int sum = 0;
-//		for (int outer = 0; outer < numTags; outer++) {
-//			sum = 0;
-//			for (int inner = 0; inner < numTags; inner++)
-//				sum += transitionProbArr[outer][inner];
-//			for (int inner = 0; inner < numTags; inner++)
-//				transitionProbArr[outer][inner] /= sum;
-//		}
+
+	public void computeProbabilities() {
+		for (EmissionMatrixColumnEntry columnEntry : emissionProbMatrix)
+			columnEntry.computeProbabilities();
+	}
+
+	private class EmissionMatrixColumnEntry {
+		private POSTag postag;
+		private List<EmissionMatrixRowEntry> transitions;
+		private int sum = 0;
+
+		public EmissionMatrixColumnEntry(POSTag tag) {
+			postag = tag;
+			sum = 0;
+		}
+
+		public void computeProbabilities() {
+			for (EmissionMatrixRowEntry rowEntry : transitions)
+				rowEntry.computeProbability(sum);
+		}
+
+		public POSTag getPostag() {
+			return postag;
+		}
+
+		public void addTransition(Observation word) {
+			EmissionMatrixRowEntry foundRowEntry = null;
+			for (EmissionMatrixRowEntry rowEntry : getTransitions())
+				if (rowEntry.word.equals(word)) {
+					foundRowEntry = rowEntry;
+					break;
+				}
+			if (null == foundRowEntry) {
+				foundRowEntry = new EmissionMatrixRowEntry(word);
+				transitions.add(foundRowEntry);
+			} else
+				foundRowEntry.update();
+			sum++;
+		}
+
+		public void setPostag(POSTag postag) {
+			this.postag = postag;
+		}
+
+		public List<EmissionMatrixRowEntry> getTransitions() {
+			if (null == transitions)
+				transitions = new ArrayList<EmissionMatrixRowEntry>();
+			return transitions;
+		}
+
+		public void setTransitions(List<EmissionMatrixRowEntry> transitions) {
+			this.transitions = transitions;
+		}
+
+	}
+
+	private class EmissionMatrixRowEntry {
+		private Observation word;
+		private float probability;
+
+		public EmissionMatrixRowEntry() {
+			probability = 1f;
+		}
+
+		public void computeProbability(int sum) {
+			setProbability(probability / sum);
+		}
+
+		public void update() {
+			probability += 1;
+		}
+
+		public EmissionMatrixRowEntry(Observation word) {
+			this();
+			this.word = word;
+		}
+
+		public Observation getWord() {
+			return word;
+		}
+
+		public void setWord(Observation word) {
+			this.word = word;
+		}
+
+		public float getProbability() {
+			return probability;
+		}
+
+		public void setProbability(float probability) {
+			this.probability = probability;
+		}
+
 	}
 }

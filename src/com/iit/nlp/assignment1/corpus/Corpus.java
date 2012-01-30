@@ -27,4 +27,8 @@ public class Corpus {
 		documents.add(new TaggedDocument(file));
 	}
 
+	public List<TaggedDocument> getDocuments() {
+		return documents;
+	}
+
 }

@@ -36,7 +36,7 @@ public class POSTagExtracter {
 
 	public static void main(String... args) {
 		POSTagExtracter extracter = new POSTagExtracter();
-		String input = "CJS_As AT0_the NN2_roots VVB_begin TO0_to VVI_break PRP_out of AT0_the NN2_grains AT0_the NN1_barley VBZ_is VVN_transferred PRP_to AT0_a AJ0_vast NN1_hall VVN_heated PRP_with AJ0_warm NN1_air CJC_and VVD-VVN_turned PRP_by AJ0_large ";
+		String input = "ITJ_Yes PUN_, PNP_I VM0_would VVI_like TO0_to VVI_make NP0_ACETPOS_'s NN1_Home NN1-VVB_Care NN1_service CJC_and NN1_Education NN2_Programmes AV0_more AV0_widely AJ0_available CJC_and VVB_enclose AT0_a NN1_donation PRF_of PUN_: <gap desc=\"remainder of form\" resp=OUP_";
 		String[] matches = extracter.tags(input);
 		System.out.println(matches.length);
 		for (String match : matches)

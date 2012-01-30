@@ -1,6 +1,10 @@
 package com.iit.nlp.assignment1;
 
+import java.io.IOException;
+
 import com.iit.nlp.assignment1.corpus.Corpus;
+import com.iit.nlp.assignment1.pos.ModelParameterEstimater;
+import com.iit.nlp.assignment1.pos.ModelParameters;
 
 public class POSTagger {
 
@@ -17,5 +21,18 @@ public class POSTagger {
 		}
 		Corpus corpus = new Corpus(args[0]);
 		POSTagger postagger = new POSTagger(corpus);
+		try {
+			postagger.startTagging();
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
+	}
+
+	private void startTagging() throws IOException {
+		ModelParameterEstimater parameterEstimater = new ModelParameterEstimater(
+				new ModelParameters(), corpus.getDocuments());
+		parameterEstimater.estimate();
+
 	}
 }
