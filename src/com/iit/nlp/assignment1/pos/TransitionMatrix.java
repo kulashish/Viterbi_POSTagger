@@ -21,6 +21,24 @@ public class TransitionMatrix {
 		return null != transitionProbMatrix ? transitionProbMatrix.size() : 0;
 	}
 
+	public float getTransitionProbability(POSTag tag1, POSTag tag2) {
+		TransitionMatrixColumnEntry foundColumnEntry = null;
+		for (TransitionMatrixColumnEntry columnEntry : getTransitionProbMatrix())
+			if (columnEntry.getPostag().equals(tag1)) {
+				foundColumnEntry = columnEntry;
+				break;
+			}
+		TransitionMatrixRowEntry foundRowEntry = null;
+		if (null != foundColumnEntry)
+			for (TransitionMatrixRowEntry rowEntry : foundColumnEntry
+					.getTransitions())
+				if (rowEntry.getPostag().equals(tag2)) {
+					foundRowEntry = rowEntry;
+					break;
+				}
+		return foundRowEntry != null ? foundRowEntry.getProbability() : 0f;
+	}
+
 	public void addTransition(POSTag tag1, POSTag tag2) {
 		TransitionMatrixColumnEntry foundColumnEntry = null;
 		for (TransitionMatrixColumnEntry columnEntry : getTransitionProbMatrix())

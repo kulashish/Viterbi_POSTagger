@@ -37,6 +37,16 @@ public class InitialProbabilityVector {
 			entry.computeProbability(sum);
 	}
 
+	public float getInitialProbability(POSTag tag) {
+		float prob = 0f;
+		for (InitialProbabilityVectorEntry entry : initialProbList)
+			if (entry.getTag().equals(tag)) {
+				prob = entry.getProbability();
+				break;
+			}
+		return prob;
+	}
+
 	private class InitialProbabilityVectorEntry {
 		private POSTag tag;
 		private float probability;

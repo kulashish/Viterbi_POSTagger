@@ -28,11 +28,11 @@ public class TaggedDocument {
 		String[] tags = null;
 		String[] observations = null;
 		while (null != (line = reader.readLine())) {
-			System.out.println(line);
+//			System.out.println(line);
 			tags = tagExtracter.tags(line);
 			observations = tagExtracter.words(line);
 			if (tags.length != observations.length) {
-				System.out.println(line);
+//				System.out.println(line);
 				int min = tags.length < observations.length ? tags.length
 						: observations.length;
 				tags = Arrays.copyOfRange(tags, 0, min);

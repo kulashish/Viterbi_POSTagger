@@ -126,4 +126,22 @@ public class EmissionMatrix {
 		}
 
 	}
+
+	public float getEmissionProbability(POSTag tag, Observation observation) {
+		EmissionMatrixColumnEntry foundColumnEntry = null;
+		for (EmissionMatrixColumnEntry columnEntry : getEmissionProbMatrix())
+			if (columnEntry.getPostag().equals(tag)) {
+				foundColumnEntry = columnEntry;
+				break;
+			}
+		EmissionMatrixRowEntry foundRowEntry = null;
+		if (null != foundColumnEntry)
+			for (EmissionMatrixRowEntry rowEntry : foundColumnEntry
+					.getTransitions())
+				if (rowEntry.word.equals(observation)) {
+					foundRowEntry = rowEntry;
+					break;
+				}
+		return foundRowEntry != null ? foundRowEntry.getProbability() : 0f;
+	}
 }

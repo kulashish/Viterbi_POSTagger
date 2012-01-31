@@ -26,9 +26,10 @@ public class ModelParameterEstimater {
 		parameters.updateParameters();
 		System.out.println("Number of tags : "
 				+ parameters.getTagSet().getSize());
+//		parameters.getTagSet().print();
 		System.out.println("Transition Matrix has "
 				+ parameters.getTransitionMatrix().getSize());
-		parameters.getTransitionMatrix().print();
+//		parameters.getTransitionMatrix().print();
 		System.out.println("Emission Matrix has "
 				+ parameters.getEmissionMatrix().getSize());
 		System.out.println("Initial Probability vector has "

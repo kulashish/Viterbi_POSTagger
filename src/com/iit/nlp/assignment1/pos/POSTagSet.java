@@ -1,6 +1,7 @@
 package com.iit.nlp.assignment1.pos;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class POSTagSet {
@@ -41,5 +42,14 @@ public class POSTagSet {
 
 	public int getSize() {
 		return getTags().size();
+	}
+
+	public void print() {
+		Iterator<POSTag> iter = tags.iterator();
+		POSTag tag = null;
+		while (iter.hasNext()) {
+			tag = iter.next();
+			System.out.println(tag.getIndex() + " : " + tag.getName());
+		}
 	}
 }
