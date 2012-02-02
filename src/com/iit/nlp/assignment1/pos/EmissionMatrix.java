@@ -1,46 +1,43 @@
 package com.iit.nlp.assignment1.pos;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EmissionMatrix {
 
-	private List<EmissionMatrixColumnEntry> emissionProbMatrix;
+	private Map<POSTag, EmissionMatrixColumnEntry> emissionProbMatrix;
 
 	public int getSize() {
 		return null != emissionProbMatrix ? emissionProbMatrix.size() : 0;
 	}
 
-	public List<EmissionMatrixColumnEntry> getEmissionProbMatrix() {
+	public Map<POSTag, EmissionMatrixColumnEntry> getEmissionProbMatrix() {
 		if (null == emissionProbMatrix)
-			emissionProbMatrix = new ArrayList<EmissionMatrixColumnEntry>();
+			emissionProbMatrix = new HashMap<POSTag, EmissionMatrixColumnEntry>();
 		return emissionProbMatrix;
 	}
 
 	public void addEmission(POSTag tag, Observation word) {
-		EmissionMatrixColumnEntry foundColumnEntry = null;
-		for (EmissionMatrixColumnEntry columnEntry : getEmissionProbMatrix())
-			if (columnEntry.getPostag().equals(tag)) {
-				foundColumnEntry = columnEntry;
-				break;
-			}
+		EmissionMatrixColumnEntry foundColumnEntry = getEmissionProbMatrix()
+				.get(tag);
 
 		if (null == foundColumnEntry) {
 			foundColumnEntry = new EmissionMatrixColumnEntry(tag);
-			emissionProbMatrix.add(foundColumnEntry);
+			emissionProbMatrix.put(tag, foundColumnEntry);
 		}
 
 		foundColumnEntry.addTransition(word);
 	}
 
 	public void computeProbabilities() {
-		for (EmissionMatrixColumnEntry columnEntry : emissionProbMatrix)
+		for (EmissionMatrixColumnEntry columnEntry : emissionProbMatrix
+				.values())
 			columnEntry.computeProbabilities();
 	}
 
 	private class EmissionMatrixColumnEntry {
 		private POSTag postag;
-		private List<EmissionMatrixRowEntry> transitions;
+		private Map<Observation, EmissionMatrixRowEntry> transitions;
 		private int sum = 0;
 
 		public EmissionMatrixColumnEntry(POSTag tag) {
@@ -49,7 +46,7 @@ public class EmissionMatrix {
 		}
 
 		public void computeProbabilities() {
-			for (EmissionMatrixRowEntry rowEntry : transitions)
+			for (EmissionMatrixRowEntry rowEntry : transitions.values())
 				rowEntry.computeProbability(sum);
 		}
 
@@ -58,15 +55,11 @@ public class EmissionMatrix {
 		}
 
 		public void addTransition(Observation word) {
-			EmissionMatrixRowEntry foundRowEntry = null;
-			for (EmissionMatrixRowEntry rowEntry : getTransitions())
-				if (rowEntry.word.equals(word)) {
-					foundRowEntry = rowEntry;
-					break;
-				}
+			EmissionMatrixRowEntry foundRowEntry = getTransitions().get(word);
+
 			if (null == foundRowEntry) {
 				foundRowEntry = new EmissionMatrixRowEntry(word);
-				transitions.add(foundRowEntry);
+				transitions.put(word, foundRowEntry);
 			} else
 				foundRowEntry.update();
 			sum++;
@@ -76,16 +69,11 @@ public class EmissionMatrix {
 			this.postag = postag;
 		}
 
-		public List<EmissionMatrixRowEntry> getTransitions() {
+		public Map<Observation, EmissionMatrixRowEntry> getTransitions() {
 			if (null == transitions)
-				transitions = new ArrayList<EmissionMatrixRowEntry>();
+				transitions = new HashMap<Observation, EmissionMatrixRowEntry>();
 			return transitions;
 		}
-
-		public void setTransitions(List<EmissionMatrixRowEntry> transitions) {
-			this.transitions = transitions;
-		}
-
 	}
 
 	private class EmissionMatrixRowEntry {
@@ -128,20 +116,13 @@ public class EmissionMatrix {
 	}
 
 	public float getEmissionProbability(POSTag tag, Observation observation) {
-		EmissionMatrixColumnEntry foundColumnEntry = null;
-		for (EmissionMatrixColumnEntry columnEntry : getEmissionProbMatrix())
-			if (columnEntry.getPostag().equals(tag)) {
-				foundColumnEntry = columnEntry;
-				break;
-			}
+		EmissionMatrixColumnEntry foundColumnEntry = getEmissionProbMatrix()
+				.get(tag);
+
 		EmissionMatrixRowEntry foundRowEntry = null;
 		if (null != foundColumnEntry)
-			for (EmissionMatrixRowEntry rowEntry : foundColumnEntry
-					.getTransitions())
-				if (rowEntry.word.equals(observation)) {
-					foundRowEntry = rowEntry;
-					break;
-				}
+			foundRowEntry = foundColumnEntry.getTransitions().get(observation);
+
 		return foundRowEntry != null ? foundRowEntry.getProbability() : 0f;
 	}
 }

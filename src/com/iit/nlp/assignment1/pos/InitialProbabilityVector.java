@@ -1,45 +1,42 @@
 package com.iit.nlp.assignment1.pos;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class InitialProbabilityVector {
 	private int sum = 0;
-	private List<InitialProbabilityVectorEntry> initialProbList;
+	private Map<POSTag, InitialProbabilityVectorEntry> initialProbList;
 
 	public int getSize() {
 		return null != initialProbList ? initialProbList.size() : 0;
 	}
 
 	public void addState(POSTag tag) {
-		InitialProbabilityVectorEntry foundEntry = null;
-		for (InitialProbabilityVectorEntry entry : getInitialProbList())
-			if (entry.tag.equals(tag)) {
-				foundEntry = entry;
-				break;
-			}
+		InitialProbabilityVectorEntry foundEntry = getInitialProbList()
+				.get(tag);
+
 		if (null == foundEntry) {
 			foundEntry = new InitialProbabilityVectorEntry(tag);
-			initialProbList.add(foundEntry);
+			initialProbList.put(tag, foundEntry);
 		} else
 			foundEntry.update();
 		sum++;
 	}
 
-	public List<InitialProbabilityVectorEntry> getInitialProbList() {
+	public Map<POSTag, InitialProbabilityVectorEntry> getInitialProbList() {
 		if (null == initialProbList)
-			initialProbList = new ArrayList<InitialProbabilityVectorEntry>();
+			initialProbList = new HashMap<POSTag, InitialProbabilityVectorEntry>();
 		return initialProbList;
 	}
 
 	public void computeProbabilities() {
-		for (InitialProbabilityVectorEntry entry : initialProbList)
+		for (InitialProbabilityVectorEntry entry : initialProbList.values())
 			entry.computeProbability(sum);
 	}
 
 	public float getInitialProbability(POSTag tag) {
 		float prob = 0f;
-		for (InitialProbabilityVectorEntry entry : initialProbList)
+		for (InitialProbabilityVectorEntry entry : initialProbList.values())
 			if (entry.getTag().equals(tag)) {
 				prob = entry.getProbability();
 				break;

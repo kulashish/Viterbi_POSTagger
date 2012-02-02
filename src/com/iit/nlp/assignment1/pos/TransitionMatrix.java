@@ -1,19 +1,19 @@
 package com.iit.nlp.assignment1.pos;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TransitionMatrix {
 
-	private List<TransitionMatrixColumnEntry> transitionProbMatrix;
+	private Map<POSTag, TransitionMatrixColumnEntry> transitionProbMatrix;
 
 	public TransitionMatrix() {
 
 	}
 
-	public List<TransitionMatrixColumnEntry> getTransitionProbMatrix() {
+	public Map<POSTag, TransitionMatrixColumnEntry> getTransitionProbMatrix() {
 		if (null == transitionProbMatrix)
-			transitionProbMatrix = new ArrayList<TransitionMatrixColumnEntry>();
+			transitionProbMatrix = new HashMap<POSTag, TransitionMatrixColumnEntry>();
 		return transitionProbMatrix;
 	}
 
@@ -22,52 +22,41 @@ public class TransitionMatrix {
 	}
 
 	public float getTransitionProbability(POSTag tag1, POSTag tag2) {
-		TransitionMatrixColumnEntry foundColumnEntry = null;
-		for (TransitionMatrixColumnEntry columnEntry : getTransitionProbMatrix())
-			if (columnEntry.getPostag().equals(tag1)) {
-				foundColumnEntry = columnEntry;
-				break;
-			}
+		TransitionMatrixColumnEntry foundColumnEntry = getTransitionProbMatrix()
+				.get(tag1);
 		TransitionMatrixRowEntry foundRowEntry = null;
 		if (null != foundColumnEntry)
-			for (TransitionMatrixRowEntry rowEntry : foundColumnEntry
-					.getTransitions())
-				if (rowEntry.getPostag().equals(tag2)) {
-					foundRowEntry = rowEntry;
-					break;
-				}
+			foundRowEntry = foundColumnEntry.getTransitions().get(tag2);
 		return foundRowEntry != null ? foundRowEntry.getProbability() : 0f;
 	}
 
 	public void addTransition(POSTag tag1, POSTag tag2) {
-		TransitionMatrixColumnEntry foundColumnEntry = null;
-		for (TransitionMatrixColumnEntry columnEntry : getTransitionProbMatrix())
-			if (columnEntry.getPostag().equals(tag1)) {
-				foundColumnEntry = columnEntry;
-				break;
-			}
+		TransitionMatrixColumnEntry foundColumnEntry = getTransitionProbMatrix()
+				.get(tag1);
 
 		if (null == foundColumnEntry) {
 			foundColumnEntry = new TransitionMatrixColumnEntry(tag1);
-			transitionProbMatrix.add(foundColumnEntry);
+			transitionProbMatrix.put(tag1, foundColumnEntry);
 		}
 
 		foundColumnEntry.addTransition(tag2);
 	}
 
 	public void computeProbabilities() {
-		for (TransitionMatrixColumnEntry columnEntry : transitionProbMatrix)
+		for (TransitionMatrixColumnEntry columnEntry : transitionProbMatrix
+				.values())
 			columnEntry.computeProbabilities();
 	}
 
 	public void print() {
-		for (TransitionMatrixColumnEntry columnEntry : transitionProbMatrix)
+		for (TransitionMatrixColumnEntry columnEntry : transitionProbMatrix
+				.values())
 			columnEntry.print();
 	}
 
 	private class TransitionMatrixColumnEntry {
 		private POSTag postag;
-		private List<TransitionMatrixRowEntry> transitions;
+		private Map<POSTag, TransitionMatrixRowEntry> transitions;
 		private int sum;
 
 		public TransitionMatrixColumnEntry(POSTag tag) {
@@ -79,12 +68,12 @@ public class TransitionMatrix {
 			System.out.println();
 			System.out.println("Transitions for Tag : " + postag.getName()
 					+ " - ");
-			for (TransitionMatrixRowEntry rowEntry : transitions)
+			for (TransitionMatrixRowEntry rowEntry : transitions.values())
 				rowEntry.print();
 		}
 
 		public void computeProbabilities() {
-			for (TransitionMatrixRowEntry rowEntry : transitions)
+			for (TransitionMatrixRowEntry rowEntry : transitions.values())
 				rowEntry.computeProbability(sum);
 		}
 
@@ -93,15 +82,11 @@ public class TransitionMatrix {
 		}
 
 		public void addTransition(POSTag tag) {
-			TransitionMatrixRowEntry foundRowEntry = null;
-			for (TransitionMatrixRowEntry rowEntry : getTransitions())
-				if (rowEntry.postag.equals(tag)) {
-					foundRowEntry = rowEntry;
-					break;
-				}
+			TransitionMatrixRowEntry foundRowEntry = getTransitions().get(tag);
+
 			if (null == foundRowEntry) {
 				foundRowEntry = new TransitionMatrixRowEntry(tag);
-				transitions.add(foundRowEntry);
+				transitions.put(tag, foundRowEntry);
 			} else
 				foundRowEntry.update();
 			sum++;
@@ -111,14 +96,10 @@ public class TransitionMatrix {
 			this.postag = postag;
 		}
 
-		public List<TransitionMatrixRowEntry> getTransitions() {
+		public Map<POSTag, TransitionMatrixRowEntry> getTransitions() {
 			if (null == transitions)
-				transitions = new ArrayList<TransitionMatrixRowEntry>();
+				transitions = new HashMap<POSTag, TransitionMatrixRowEntry>();
 			return transitions;
-		}
-
-		public void setTransitions(List<TransitionMatrixRowEntry> transitions) {
-			this.transitions = transitions;
 		}
 
 	}

@@ -1,16 +1,16 @@
 package com.iit.nlp.assignment1.pos;
 
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class POSTagSet {
 
-	private Set<POSTag> tags;
+	private SortedSet<POSTag> tags;
 
-	public Set<POSTag> getTags() {
+	public SortedSet<POSTag> getTags() {
 		if (null == tags)
-			tags = new HashSet<POSTag>();
+			tags = new TreeSet<POSTag>();
 		return tags;
 	}
 
@@ -21,23 +21,15 @@ public class POSTagSet {
 	}
 
 	public int getIndex(String name) {
-		int index = -1;
-		for (POSTag tag : getTags())
-			if (name.equalsIgnoreCase(tag.getName())) {
-				index = tag.getIndex();
-				break;
-			}
-		return index;
+		POSTag tag = new POSTag(name);
+		return getTags().tailSet(tag).first().getIndex();
 	}
 
 	public POSTag addTag(String tagname) {
-		POSTag tagTosearch = null;
-		for (POSTag tag : getTags())
-			if (tagname.equalsIgnoreCase(tag.getName())) {
-				tagTosearch = tag;
-				break;
-			}
-		return null != tagTosearch ? tagTosearch : addTag(new POSTag(tagname));
+		POSTag tag = new POSTag(tagname);
+		POSTag tagTosearch = getTags().contains(tag) ? getTags().tailSet(tag)
+				.first() : addTag(tag);
+		return tagTosearch;
 	}
 
 	public int getSize() {

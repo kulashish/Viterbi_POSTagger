@@ -32,7 +32,9 @@ public class POSTagger {
 	private void startTagging() throws IOException {
 		ModelParameterEstimater parameterEstimater = new ModelParameterEstimater(
 				new ModelParameters(), corpus.getDocuments());
+		long time1 = System.currentTimeMillis();
 		parameterEstimater.estimate();
+		System.out.println(System.currentTimeMillis() - time1);
 
 	}
 }

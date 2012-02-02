@@ -1,6 +1,6 @@
 package com.iit.nlp.assignment1.pos;
 
-public class POSTag {
+public class POSTag implements Comparable<POSTag> {
 	private static int tagcount = 0;
 	private String name;
 	private int index;
@@ -30,6 +30,11 @@ public class POSTag {
 	public boolean equals(Object o) {
 		POSTag tag = (POSTag) o;
 		return this.name.equalsIgnoreCase(tag.name);
+	}
+
+	@Override
+	public int compareTo(POSTag o) {
+		return this.name.compareToIgnoreCase(o.name);
 	}
 
 }

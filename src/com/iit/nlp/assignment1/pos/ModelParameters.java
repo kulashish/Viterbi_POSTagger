@@ -6,12 +6,14 @@ public class ModelParameters {
 	private TransitionMatrix transitionMatrix;
 	private EmissionMatrix emissionMatrix;
 	private InitialProbabilityVector initialProbVec;
+	private ObservationSet observationSet;
 
 	public ModelParameters() {
 		tagSet = new POSTagSet();
 		transitionMatrix = new TransitionMatrix();
 		emissionMatrix = new EmissionMatrix();
 		initialProbVec = new InitialProbabilityVector();
+		observationSet = new ObservationSet();
 	}
 
 	public POSTagSet getTagSet() {
@@ -36,7 +38,7 @@ public class ModelParameters {
 		Observation observation = null;
 		for (int i = 0; i < tags.length; i++) {
 			tag = tagSet.addTag(tags[i]);
-			observation = new Observation(observations[i]);
+			observation = observationSet.addObservation(observations[i]);
 			if (null == prevTag)
 				initialProbVec.addState(tag);
 			if (null != prevTag && null != tag)
