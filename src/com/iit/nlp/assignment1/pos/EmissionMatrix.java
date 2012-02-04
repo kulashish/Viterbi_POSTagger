@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EmissionMatrix {
+	private final static float DEFAULT_PROB = 0.0000001f;
 
 	private Map<POSTag, EmissionMatrixColumnEntry> emissionProbMatrix;
 
@@ -116,13 +117,15 @@ public class EmissionMatrix {
 	}
 
 	public float getEmissionProbability(POSTag tag, Observation observation) {
+		float val = DEFAULT_PROB;
 		EmissionMatrixColumnEntry foundColumnEntry = getEmissionProbMatrix()
 				.get(tag);
 
 		EmissionMatrixRowEntry foundRowEntry = null;
 		if (null != foundColumnEntry)
 			foundRowEntry = foundColumnEntry.getTransitions().get(observation);
-
-		return foundRowEntry != null ? foundRowEntry.getProbability() : 0f;
+		if (null != foundRowEntry)
+			val = foundRowEntry.getProbability();
+		return val;
 	}
 }

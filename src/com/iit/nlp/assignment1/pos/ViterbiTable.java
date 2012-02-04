@@ -3,16 +3,24 @@ package com.iit.nlp.assignment1.pos;
 public class ViterbiTable {
 	private ViterbiTableColumnEntry[] endingStates;
 
-	public ViterbiTableColumnEntry[] getEndingStates() {
-		return endingStates;
-	}
-
 	public ViterbiTable(POSTagSet tagSet, Observation[] observations) {
 		endingStates = new ViterbiTableColumnEntry[tagSet.getSize()];
 		int index = 0;
-		for (POSTag tag : tagSet.getTags())
+		for (POSTag tag : tagSet.getTags()) {
+			// System.out.println(tag.getName());
 			endingStates[index++] = new ViterbiTableColumnEntry(tag,
 					observations);
+		}
+	}
+	
+	public void reinitialize(Observation[] observations) {
+		for(ViterbiTableColumnEntry entry:endingStates)
+			entry.reinitialize(observations);
+		
+	}
+	
+	public ViterbiTableColumnEntry[] getEndingStates() {
+		return endingStates;
 	}
 
 	class ViterbiTableColumnEntry {
@@ -25,6 +33,13 @@ public class ViterbiTable {
 			for (int i = 0; i < outSequence.length; i++)
 				outSequence[i] = new ViterbiTableRowEntry(observations[i],
 						i == 0 ? 1 : endingStates.length);
+		}
+
+		public void reinitialize(Observation[] observations) {
+			outSequence = new ViterbiTableRowEntry[observations.length];
+			for (int i = 0; i < outSequence.length; i++)
+				outSequence[i] = new ViterbiTableRowEntry(observations[i],
+						i == 0 ? 1 : endingStates.length);			
 		}
 
 		public POSTag getEndState() {
@@ -46,21 +61,25 @@ public class ViterbiTable {
 	}
 
 	class ViterbiTableRowEntry {
+//		private final static float DEFAULT_PROB = 0.000000000000000000000000000000000000000000001f;
 		private Observation word;
-		private float[] accumulatedProbabilities;
-		private float maxProbability;
+		private double[] accumulatedProbabilities;
+		private double maxProbability = 0d;
 		private int stateWithMaxProb;
 
 		public ViterbiTableRowEntry(Observation observation, int size) {
+			// System.out.println("Creating row entry for "
+			// + observation.getName() + " with size " + size);
 			word = observation;
-			accumulatedProbabilities = new float[size];
+			accumulatedProbabilities = new double[size];
+			for (int i = 0; i < size; i++)
+				accumulatedProbabilities[i] = 0d;
 		}
 
 		public void computeMaxProbability() {
-			float max = 0f;
 			for (int index = 0; index < accumulatedProbabilities.length; index++)
-				if (accumulatedProbabilities[index] > max) {
-					max = accumulatedProbabilities[index];
+				if (accumulatedProbabilities[index] > maxProbability) {
+					maxProbability = accumulatedProbabilities[index];
 					stateWithMaxProb = index;
 				}
 		}
@@ -69,7 +88,7 @@ public class ViterbiTable {
 			return stateWithMaxProb;
 		}
 
-		public float getMaxProbability() {
+		public double getMaxProbability() {
 			return maxProbability;
 		}
 
@@ -81,11 +100,12 @@ public class ViterbiTable {
 			this.word = word;
 		}
 
-		public float[] getAccumulatedProbabilities() {
+		public double[] getAccumulatedProbabilities() {
 			return accumulatedProbabilities;
 		}
 
-		public void setAccumulatedProbabilities(float[] accumulatedProbabilities) {
+		public void setAccumulatedProbabilities(
+				double[] accumulatedProbabilities) {
 			this.accumulatedProbabilities = accumulatedProbabilities;
 		}
 
@@ -98,7 +118,20 @@ public class ViterbiTable {
 			entry.getOutSequence()[0].accumulatedProbabilities[0] = initialProbVec
 					.getInitialProbability(state);
 			entry.getOutSequence()[0].computeMaxProbability();
+			// System.out.println(entry.getEndState().getName()+": "+
+			// entry.getOutSequence()[0].getMaxProbability());
 		}
+	}
+
+	public ViterbiTableColumnEntry getColumnEntry(POSTag tag) {
+		ViterbiTableColumnEntry entryFound = null;
+		for (ViterbiTableColumnEntry entry : endingStates) {
+			if (entry.getEndState().equals(tag)) {
+				entryFound = entry;
+				break;
+			}
+		}
+		return entryFound;
 	}
 
 }

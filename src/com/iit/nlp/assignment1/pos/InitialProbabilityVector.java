@@ -4,11 +4,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InitialProbabilityVector {
+	private static final float DEFAULT_PROB = 0.0000001f;
 	private int sum = 0;
 	private Map<POSTag, InitialProbabilityVectorEntry> initialProbList;
 
 	public int getSize() {
 		return null != initialProbList ? initialProbList.size() : 0;
+	}
+
+	public void print() {
+		for (InitialProbabilityVectorEntry entry : initialProbList.values()) {
+			System.out.print(entry.getTag().getName() + ": ");
+			System.out.println(entry.getProbability());
+		}
 	}
 
 	public void addState(POSTag tag) {
@@ -35,7 +43,7 @@ public class InitialProbabilityVector {
 	}
 
 	public float getInitialProbability(POSTag tag) {
-		float prob = 0f;
+		float prob = DEFAULT_PROB;
 		for (InitialProbabilityVectorEntry entry : initialProbList.values())
 			if (entry.getTag().equals(tag)) {
 				prob = entry.getProbability();

@@ -7,15 +7,14 @@ public class POSTag implements Comparable<POSTag> {
 
 	public POSTag(String tag) {
 		name = tag;
-		index = tagcount++;
 	}
 
 	public int getIndex() {
 		return index;
 	}
 
-	public void setIndex(int index) {
-		this.index = index;
+	public void setIndex() {
+		index = tagcount++;
 	}
 
 	public String getName() {

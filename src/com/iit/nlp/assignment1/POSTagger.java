@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.iit.nlp.assignment1.corpus.Corpus;
 import com.iit.nlp.assignment1.pos.ModelParameterEstimater;
 import com.iit.nlp.assignment1.pos.ModelParameters;
+import com.iit.nlp.assignment1.pos.ViterbiAlgorithm;
 
 public class POSTagger {
 
@@ -30,11 +31,20 @@ public class POSTagger {
 	}
 
 	private void startTagging() throws IOException {
-		ModelParameterEstimater parameterEstimater = new ModelParameterEstimater(
-				new ModelParameters(), corpus.getDocuments());
-		long time1 = System.currentTimeMillis();
-		parameterEstimater.estimate();
-		System.out.println(System.currentTimeMillis() - time1);
-
+		float acc[] = new float[5];
+		for (int i = 0; i < 5; i++) {
+			System.out.println("Iteration " + (i + 1));
+			ModelParameterEstimater parameterEstimater = new ModelParameterEstimater(
+					new ModelParameters(), corpus.getTrainingSet(i));
+			long time1 = System.currentTimeMillis();
+			parameterEstimater.estimate();
+			System.out.println(System.currentTimeMillis() - time1);
+			ViterbiAlgorithm viterbi = new ViterbiAlgorithm(parameterEstimater
+					.getParameters(), corpus.getTestSet(i));
+			acc[i] = viterbi.run();
+			System.out.println("Accuracy : " + acc[i]);
+		}
+		System.out.println("Average accuracy : "
+				+ (acc[0] + acc[1] + acc[2] + acc[3] + acc[4]) / 5);
 	}
 }

@@ -16,6 +16,10 @@ public class ModelParameters {
 		observationSet = new ObservationSet();
 	}
 
+	public ObservationSet getObservationSet() {
+		return observationSet;
+	}
+
 	public POSTagSet getTagSet() {
 		return tagSet;
 	}

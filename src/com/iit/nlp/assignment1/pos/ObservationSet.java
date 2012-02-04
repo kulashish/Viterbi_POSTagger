@@ -22,4 +22,11 @@ public class ObservationSet {
 		return observation;
 	}
 
+	public Observation[] getObservations(String[] words) {
+		Observation[] observations = new Observation[words.length];
+		for (int index = 0; index < words.length; index++)
+			observations[index] = addObservation(words[index]);
+		return observations;
+	}
+
 }

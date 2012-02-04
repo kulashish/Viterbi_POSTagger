@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TransitionMatrix {
+	private static final float DEFAULT_PROB = 0.0000001f;
 
 	private Map<POSTag, TransitionMatrixColumnEntry> transitionProbMatrix;
 
@@ -22,12 +23,15 @@ public class TransitionMatrix {
 	}
 
 	public float getTransitionProbability(POSTag tag1, POSTag tag2) {
+		float val = DEFAULT_PROB;
 		TransitionMatrixColumnEntry foundColumnEntry = getTransitionProbMatrix()
 				.get(tag1);
 		TransitionMatrixRowEntry foundRowEntry = null;
 		if (null != foundColumnEntry)
 			foundRowEntry = foundColumnEntry.getTransitions().get(tag2);
-		return foundRowEntry != null ? foundRowEntry.getProbability() : 0f;
+		if (null != foundRowEntry)
+			val = foundRowEntry.getProbability();
+		return val;
 	}
 
 	public void addTransition(POSTag tag1, POSTag tag2) {

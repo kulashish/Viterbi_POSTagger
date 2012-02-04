@@ -18,9 +18,22 @@ public class TaggedDocument {
 		filePtr = file;
 	}
 
+	public String readLine() throws IOException {
+		if (null == reader)
+			reader = new BufferedReader(new FileReader(filePtr));
+		return reader.readLine();
+	}
+
+	public void closeReader() throws IOException {
+		if (null != reader) {
+			reader.close();
+			reader = null;
+		}
+	}
+
 	public void parseAndUpdateParameters(ModelParameters parameters)
 			throws IOException {
-		System.out.println("Parsing " + filePtr.getName() + " ...");
+//		System.out.println("Parsing " + filePtr.getName() + " ...");
 		reader = new BufferedReader(new FileReader(filePtr));
 
 		String line = null;
@@ -41,7 +54,6 @@ public class TaggedDocument {
 			}
 			parameters.updateParameters(tags, observations);
 		}
-		if (null != reader)
-			reader.close();
+		closeReader();
 	}
 }
