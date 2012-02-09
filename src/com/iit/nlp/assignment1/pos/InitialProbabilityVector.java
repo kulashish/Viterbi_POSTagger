@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InitialProbabilityVector {
-	// private static final float DEFAULT_PROB = 0.0000001f;
 	private int sum = 0;
 	private Map<POSTag, InitialProbabilityVectorEntry> initialProbList;
 

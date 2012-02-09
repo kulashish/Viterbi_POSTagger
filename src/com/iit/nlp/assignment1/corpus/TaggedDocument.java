@@ -42,7 +42,6 @@ public class TaggedDocument {
 		String[] observations = null;
 
 		while (null != (line = reader.readLine())) {
-			// System.out.println(line);
 			tags = tagExtracter.tags(line);
 			observations = tagExtracter.words(line);
 			if (tags.length != observations.length) {

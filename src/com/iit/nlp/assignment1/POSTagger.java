@@ -32,7 +32,7 @@ public class POSTagger {
 	}
 
 	private void startTagging() throws IOException {
-		float acc[] = new float[5];
+//		float acc[] = new float[5];
 		float lineaccuracy = 0f;
 		// for (int i = 0; i < 5; i++) {
 		// System.out.println("Iteration " + (i + 1));
@@ -52,13 +52,11 @@ public class POSTagger {
 		//
 		ModelParameterEstimater parameterEstimater = new ModelParameterEstimater(
 				new ModelParameters(), corpus.getDocuments());
-		long time1 = System.currentTimeMillis();
 		parameterEstimater.estimate();
-		System.out.println(System.currentTimeMillis() - time1);
 		ViterbiAlgorithm viterbi = new ViterbiAlgorithm(
 				parameterEstimater.getParameters(), corpus.getTestDocuments());
 		lineaccuracy = viterbi.run();
-		System.out.println("Accuracy : " + lineaccuracy);
+		System.out.println("Line Accuracy : " + lineaccuracy);
 		System.out.println("Word accuracy : "
 				+ viterbi.getObservationAccuracy());
 	}

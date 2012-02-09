@@ -13,13 +13,6 @@ public class Corpus {
 
 	}
 
-	// public Corpus(String path) {
-	// this.path = path;
-	// File corpusFile = new File(path);
-	// for (File file : corpusFile.listFiles())
-	// addTaggedDocument(file);
-	// }
-
 	public Corpus(String trainingPath, String testPath) {
 		File trainingFile = new File(trainingPath);
 		File testFile = new File(testPath);

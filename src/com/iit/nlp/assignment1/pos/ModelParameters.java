@@ -42,10 +42,6 @@ public class ModelParameters {
 		Observation observation = null;
 		for (int i = 0; i < tags.length; i++) {
 			tag = tagSet.addTag(tags[i]);
-			if (tag.getIndex() == 225) {
-				System.out.println("TAG: " + tag.getName());
-				System.out.println("OBSERVATION: " + observations[i]);
-			}
 			observation = observationSet.addObservation(observations[i]);
 			if (null == prevTag)
 				initialProbVec.addState(tag);

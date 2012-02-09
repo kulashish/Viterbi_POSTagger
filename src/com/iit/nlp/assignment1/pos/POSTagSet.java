@@ -16,7 +16,6 @@ public class POSTagSet {
 	}
 
 	public POSTag addTag(POSTag tag) {
-		// System.out.println(tag.getName());
 		getTags().add(tag);
 		tag.setIndex();
 		return tag;
@@ -69,10 +68,9 @@ public class POSTagSet {
 	public int compareTags(POSTag[] tagset1, POSTag[] tagset2) {
 		int difference = Math.abs(tagset1.length - tagset2.length);
 		int minsize = Math.min(tagset1.length, tagset2.length);
-//		if (difference == 0)
-			for (int index = 0; index < minsize; index++)
-				if (!tagset1[index].equals(tagset2[index]))
-					difference++;
+		for (int index = 0; index < minsize; index++)
+			if (!tagset1[index].equals(tagset2[index]))
+				difference++;
 		return difference;
 	}
 

@@ -1,7 +1,6 @@
 package com.iit.nlp.assignment1.pos;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +21,7 @@ public class POSTagExtracter {
 		while (matcher.find()) {
 			tag = matcher.group();
 			if (matcher.end() == input.length()
-					|| input.charAt(matcher.end()) == ' ')
+					|| input.charAt(matcher.end()) == ' ')	// A tag cannot be followed by a space
 				continue;
 			tag = tag.substring(0, tag.indexOf('_'));
 			tags.add(tag);
@@ -34,14 +33,13 @@ public class POSTagExtracter {
 		String[] words = POSTagPattern.split(input);
 		List<String> wordList = new ArrayList<String>();
 		for (int i = 1; i < words.length; i++) {
-			if (words[i].charAt(0) == ' ')
+			if (words[i].charAt(0) == ' ')			// A word cannot start with a space
 				continue;
-			if (words[i].indexOf('<') != -1)
+			if (words[i].indexOf('<') != -1)		// take care of junk XML tags in corpus
 				words[i] = words[i].substring(0, words[i].indexOf('<'));
 			wordList.add(words[i].trim());
 		}
 		return (String[]) wordList.toArray(new String[wordList.size()]);
-		// Arrays.copyOfRange(words, 1, words.length);
 	}
 
 	public static void main(String... args) {
