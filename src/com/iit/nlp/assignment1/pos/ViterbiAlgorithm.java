@@ -17,12 +17,19 @@ public class ViterbiAlgorithm {
 	private long taggedCorrectly = 0l;
 	private long totalLines = 0l;
 	private float accuracy = 0f;
+	private long observationsTaggedCorrectly = 0l;
+	private long totalObservations = 0l;
+	private float observationAccuracy = 0f;
 
 	public ViterbiAlgorithm(ModelParameters params,
 			List<TaggedDocument> documents) {
 		modelParameters = params;
 		testDocuments = documents;
 		System.out.println("Testing on " + testDocuments.size() + " documents");
+	}
+
+	public float getObservationAccuracy() {
+		return observationAccuracy;
 	}
 
 	public float getAccuracy() {
@@ -62,16 +69,21 @@ public class ViterbiAlgorithm {
 
 	private void updateAccuracy(POSTag[] originalTags, POSTag[] tags) {
 		totalLines++;
-		// System.out.println("Original: ");
-		// for (POSTag tag : originalTags)
-		// System.out.print(tag.getName() + ", ");
-		// System.out.println("Predicted: ");
-		// for (POSTag tag : tags)
-		// System.out.print(tag.getName() + ", ");
-		if (modelParameters.getTagSet().compareTags(originalTags, tags) == 0)
+		totalObservations += tags.length;
+//		System.out.println("Original: ");
+//		for (POSTag tag : originalTags)
+//			System.out.print(tag.getName() + ", ");
+//		System.out.println("Predicted: ");
+//		for (POSTag tag : tags)
+//			System.out.print(tag.getName() + ", ");
+		int diff = modelParameters.getTagSet().compareTags(originalTags, tags);
+		if (diff == 0)
 			taggedCorrectly++;
+		observationsTaggedCorrectly += (Math.max(originalTags.length,
+				tags.length) - diff);
 		accuracy = taggedCorrectly * 1.0f / totalLines;
-
+		observationAccuracy = observationsTaggedCorrectly * 1.0f
+				/ totalObservations;
 	}
 
 	public void init(Observation[] words) {
@@ -79,13 +91,13 @@ public class ViterbiAlgorithm {
 		observations[0] = new Observation("epsilon");
 		for (int i = 1; i < observations.length; i++) {
 			observations[i] = words[i - 1];
-			// System.out.println(observations[i].getName());
+//			System.out.println(observations[i].getName());
 		}
-		if (null == viterbiTable)
-			viterbiTable = new ViterbiTable(modelParameters.getTagSet(),
-					observations);
-		else
-			viterbiTable.reinitialize(observations);
+		// if (null == viterbiTable)
+		viterbiTable = new ViterbiTable(modelParameters.getTagSet(),
+				observations);
+		// else
+		// viterbiTable.reinitialize(observations);
 		viterbiTable.init(modelParameters.getInitialProbVec());
 	}
 
@@ -100,14 +112,18 @@ public class ViterbiAlgorithm {
 	private void updateViterbiCell(int obsIndex,
 			ViterbiTableColumnEntry endstate) {
 		ViterbiTableRowEntry entry = endstate.getOutSequence()[obsIndex];
-		double[] probabilities = entry.getAccumulatedProbabilities();
-		double[] lastMaxProbs = getLastMaxProbabilities(obsIndex - 1);
+		// double[] probabilities = entry.getAccumulatedProbabilities();
+		// double[] lastMaxProbs = getLastMaxProbabilities(obsIndex - 1);
 
 		Iterator<POSTag> iter = modelParameters.getTagSet().getTags()
 				.iterator();
 		POSTag tag = null;
 		float transitionProb = 0f;
 		float emissionProb = 0f;
+		double max = 0d;
+		double prob = 0d;
+		int indexOfMax = -1;
+		double lastMaxProb = 0d;
 		// boolean stop = false;
 		while (iter.hasNext()) {
 			tag = iter.next();
@@ -119,35 +135,46 @@ public class ViterbiAlgorithm {
 			// System.out.println("**MAX ZERO!***"
 			// + observations[obsIndex].getName() + "**"
 			// + endstate.getEndState().getName());
-			probabilities[tag.getIndex()] = lastMaxProbs[tag.getIndex()]
-					* transitionProb * emissionProb;
+			// probabilities[tag.getIndex()] = Math.log(lastMaxProbs[tag
+			// .getIndex()])
+			// + Math.log(transitionProb) + Math.log(emissionProb);
+			lastMaxProb = viterbiTable.getEndingStates()[tag.getIndex()]
+					.getOutSequence()[obsIndex - 1].getMaxProbability();
+			prob = lastMaxProb + Math.log(transitionProb)
+					+ Math.log(emissionProb);
+			if (max == 0 || prob > max) {
+				max = prob;
+				indexOfMax = tag.getIndex();
+			}
 			// if (probabilities[tag.getIndex()] == 0f && !stop) {
 			// // System.out.println("***PROB ZERO!!**" + transitionProb + ": "
 			// // + emissionProb + ": " + lastMaxProbs[tag.getIndex()]);
 			// stop = true;
 			// }
-			// System.out.println(transitionProb+":"+emissionProb+":"+lastMaxProbs[tag.getIndex()]);
+//			 System.out.println(transitionProb+":"+emissionProb+":"+lastMaxProb);
 			// if (probabilities[tag.getIndex()] > 0)
 			// System.out.println("***" + probabilities[tag.getIndex()]
 			// + "***");
 		}
-		entry.setAccumulatedProbabilities(probabilities);
-		entry.computeMaxProbability();
+		// entry.setAccumulatedProbabilities(probabilities);
+		// entry.computeMaxProbability();
+		entry.setMaxProbability(max);
+		entry.setStateWithMaxProb(indexOfMax);
 		// System.out.println(observations[obsIndex].getName() + ": "
 		// + endstate.getEndState().getName() + ": "
 		// + entry.getMaxProbability());
 	}
 
-	private double[] getLastMaxProbabilities(int index) {
-		double[] probs = new double[viterbiTable.getEndingStates().length];
-		for (ViterbiTableColumnEntry columnEntry : viterbiTable
-				.getEndingStates()) {
-			// System.out.println(columnEntry.getEndState().getIndex());
-			probs[columnEntry.getEndState().getIndex()] = columnEntry
-					.getOutSequence()[index].getMaxProbability();
-		}
-		return probs;
-	}
+	// private double[] getLastMaxProbabilities(int index) {
+	// double[] probs = new double[viterbiTable.getEndingStates().length];
+	// for (ViterbiTableColumnEntry columnEntry : viterbiTable
+	// .getEndingStates()) {
+	// // System.out.println(columnEntry.getEndState().getIndex());
+	// probs[columnEntry.getEndState().getIndex()] = columnEntry
+	// .getOutSequence()[index].getMaxProbability();
+	// }
+	// return probs;
+	// }
 
 	private POSTag[] getTagSequence() {
 		ViterbiTableColumnEntry[] endingStates = viterbiTable.getEndingStates();
@@ -161,7 +188,7 @@ public class ViterbiAlgorithm {
 			viterbiEntries = endingState.getOutSequence();
 			currentProb = viterbiEntries[observations.length - 1]
 					.getMaxProbability();
-			if (currentProb > maxProb) {
+			if (maxProb == 0 || currentProb > maxProb) {
 				// postags[observations.length - 1] = endingState.getEndState();
 				maxProb = currentProb;
 				backPtr = viterbiEntries[observations.length - 1]
@@ -169,13 +196,13 @@ public class ViterbiAlgorithm {
 			}
 		}
 		// System.out.println(postags[observations.length - 1].getName());
-		// System.out.println("Backptr: " + backPtr);
+//		System.out.println("Backptr: " + backPtr);
 
 		ViterbiTableColumnEntry columnEntryForTag = null;
 		for (int index = observations.length - 2; index >= 0; index--) {
-			// System.out.print(modelParameters.getTagSet().getTag(backPtr)
-			// .getName()
-			// + "---");
+//			System.out.print(modelParameters.getTagSet().getTag(backPtr)
+//					.getName()
+//					+ "---");
 			columnEntryForTag = viterbiTable.getColumnEntry(modelParameters
 					.getTagSet().getTag(backPtr));
 			// System.out.println(columnEntryForTag.getEndState().getName());

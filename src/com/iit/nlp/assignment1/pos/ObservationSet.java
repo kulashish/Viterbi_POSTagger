@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class ObservationSet {
 
+	private static ObservationSet observationSet = null;
 	private Map<String, Observation> observations;
 
 	public Map<String, Observation> getObservations() {
@@ -27,6 +28,12 @@ public class ObservationSet {
 		for (int index = 0; index < words.length; index++)
 			observations[index] = addObservation(words[index]);
 		return observations;
+	}
+
+	public static ObservationSet getObservationSet() {
+		if (null == observationSet)
+			observationSet = new ObservationSet();
+		return observationSet;
 	}
 
 }

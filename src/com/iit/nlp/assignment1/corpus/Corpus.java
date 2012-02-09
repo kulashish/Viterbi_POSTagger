@@ -6,19 +6,33 @@ import java.util.List;
 
 public class Corpus {
 
-	private String path;
-	private File corpusFile;
 	private List<TaggedDocument> documents;
+	private List<TaggedDocument> testDocuments;
 
 	public Corpus() {
 
 	}
 
-	public Corpus(String path) {
-		this.path = path;
-		corpusFile = new File(path);
-		for (File file : corpusFile.listFiles())
+	// public Corpus(String path) {
+	// this.path = path;
+	// File corpusFile = new File(path);
+	// for (File file : corpusFile.listFiles())
+	// addTaggedDocument(file);
+	// }
+
+	public Corpus(String trainingPath, String testPath) {
+		File trainingFile = new File(trainingPath);
+		File testFile = new File(testPath);
+		for (File file : trainingFile.listFiles())
 			addTaggedDocument(file);
+		for (File file : testFile.listFiles())
+			addTestDocument(file);
+	}
+
+	private void addTestDocument(File file) {
+		if (null == testDocuments)
+			testDocuments = new ArrayList<TaggedDocument>();
+		testDocuments.add(new TaggedDocument(file));
 	}
 
 	public List<TaggedDocument> getTrainingSet(int index) {
@@ -53,6 +67,10 @@ public class Corpus {
 
 	public List<TaggedDocument> getDocuments() {
 		return documents;
+	}
+
+	public List<TaggedDocument> getTestDocuments() {
+		return testDocuments;
 	}
 
 }

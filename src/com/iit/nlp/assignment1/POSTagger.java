@@ -16,11 +16,12 @@ public class POSTagger {
 	}
 
 	public static void main(String... args) {
-		if (null == args || args.length != 1) {
-			System.out.println("Usage: java POSTagger <CORPUS_PATH>");
+		if (null == args || args.length != 2) {
+			System.out
+					.println("Usage: java POSTagger <TRAINING_CORPUS_PATH> <TEST_CORPUS_PATH");
 			System.exit(1);
 		}
-		Corpus corpus = new Corpus(args[0]);
+		Corpus corpus = new Corpus(args[0], args[1]);
 		POSTagger postagger = new POSTagger(corpus);
 		try {
 			postagger.startTagging();
@@ -32,19 +33,33 @@ public class POSTagger {
 
 	private void startTagging() throws IOException {
 		float acc[] = new float[5];
-		for (int i = 0; i < 5; i++) {
-			System.out.println("Iteration " + (i + 1));
-			ModelParameterEstimater parameterEstimater = new ModelParameterEstimater(
-					new ModelParameters(), corpus.getTrainingSet(i));
-			long time1 = System.currentTimeMillis();
-			parameterEstimater.estimate();
-			System.out.println(System.currentTimeMillis() - time1);
-			ViterbiAlgorithm viterbi = new ViterbiAlgorithm(parameterEstimater
-					.getParameters(), corpus.getTestSet(i));
-			acc[i] = viterbi.run();
-			System.out.println("Accuracy : " + acc[i]);
-		}
-		System.out.println("Average accuracy : "
-				+ (acc[0] + acc[1] + acc[2] + acc[3] + acc[4]) / 5);
+		float lineaccuracy = 0f;
+		// for (int i = 0; i < 5; i++) {
+		// System.out.println("Iteration " + (i + 1));
+		// ModelParameterEstimater parameterEstimater = new
+		// ModelParameterEstimater(
+		// new ModelParameters(), corpus.getTrainingSet(i));
+		// long time1 = System.currentTimeMillis();
+		// parameterEstimater.estimate();
+		// System.out.println(System.currentTimeMillis() - time1);
+		// ViterbiAlgorithm viterbi = new ViterbiAlgorithm(
+		// parameterEstimater.getParameters(), corpus.getTestSet(i));
+		// acc[i] = viterbi.run();
+		// System.out.println("Accuracy : " + acc[i]);
+		// System.out.println("Observations accuracy : "
+		// + viterbi.getObservationAccuracy());
+		// }
+		//
+		ModelParameterEstimater parameterEstimater = new ModelParameterEstimater(
+				new ModelParameters(), corpus.getDocuments());
+		long time1 = System.currentTimeMillis();
+		parameterEstimater.estimate();
+		System.out.println(System.currentTimeMillis() - time1);
+		ViterbiAlgorithm viterbi = new ViterbiAlgorithm(
+				parameterEstimater.getParameters(), corpus.getTestDocuments());
+		lineaccuracy = viterbi.run();
+		System.out.println("Accuracy : " + lineaccuracy);
+		System.out.println("Word accuracy : "
+				+ viterbi.getObservationAccuracy());
 	}
 }

@@ -8,17 +8,19 @@ public class ViterbiTable {
 		int index = 0;
 		for (POSTag tag : tagSet.getTags()) {
 			// System.out.println(tag.getName());
-			endingStates[index++] = new ViterbiTableColumnEntry(tag,
+			// endingStates[index++] = new ViterbiTableColumnEntry(tag,
+			// observations);
+			endingStates[tag.getIndex()] = new ViterbiTableColumnEntry(tag,
 					observations);
 		}
 	}
-	
+
 	public void reinitialize(Observation[] observations) {
-		for(ViterbiTableColumnEntry entry:endingStates)
+		for (ViterbiTableColumnEntry entry : endingStates)
 			entry.reinitialize(observations);
-		
+
 	}
-	
+
 	public ViterbiTableColumnEntry[] getEndingStates() {
 		return endingStates;
 	}
@@ -39,7 +41,7 @@ public class ViterbiTable {
 			outSequence = new ViterbiTableRowEntry[observations.length];
 			for (int i = 0; i < outSequence.length; i++)
 				outSequence[i] = new ViterbiTableRowEntry(observations[i],
-						i == 0 ? 1 : endingStates.length);			
+						i == 0 ? 1 : endingStates.length);
 		}
 
 		public POSTag getEndState() {
@@ -61,9 +63,10 @@ public class ViterbiTable {
 	}
 
 	class ViterbiTableRowEntry {
-//		private final static float DEFAULT_PROB = 0.000000000000000000000000000000000000000000001f;
+		// private final static float DEFAULT_PROB =
+		// 0.000000000000000000000000000000000000000000001f;
 		private Observation word;
-		private double[] accumulatedProbabilities;
+		// private double[] accumulatedProbabilities;
 		private double maxProbability = 0d;
 		private int stateWithMaxProb;
 
@@ -71,18 +74,26 @@ public class ViterbiTable {
 			// System.out.println("Creating row entry for "
 			// + observation.getName() + " with size " + size);
 			word = observation;
-			accumulatedProbabilities = new double[size];
-			for (int i = 0; i < size; i++)
-				accumulatedProbabilities[i] = 0d;
+			// accumulatedProbabilities = new double[size];
+			// for (int i = 0; i < size; i++)
+			// accumulatedProbabilities[i] = 0d;
 		}
 
-		public void computeMaxProbability() {
-			for (int index = 0; index < accumulatedProbabilities.length; index++)
-				if (accumulatedProbabilities[index] > maxProbability) {
-					maxProbability = accumulatedProbabilities[index];
-					stateWithMaxProb = index;
-				}
+		public void setMaxProbability(double maxProbability) {
+			this.maxProbability = maxProbability;
 		}
+
+		public void setStateWithMaxProb(int stateWithMaxProb) {
+			this.stateWithMaxProb = stateWithMaxProb;
+		}
+
+		// public void computeMaxProbability() {
+		// for (int index = 0; index < accumulatedProbabilities.length; index++)
+		// if (accumulatedProbabilities[index] > maxProbability) {
+		// maxProbability = accumulatedProbabilities[index];
+		// stateWithMaxProb = index;
+		// }
+		// }
 
 		public int getStateWithMaxProb() {
 			return stateWithMaxProb;
@@ -100,14 +111,14 @@ public class ViterbiTable {
 			this.word = word;
 		}
 
-		public double[] getAccumulatedProbabilities() {
-			return accumulatedProbabilities;
-		}
-
-		public void setAccumulatedProbabilities(
-				double[] accumulatedProbabilities) {
-			this.accumulatedProbabilities = accumulatedProbabilities;
-		}
+		// public double[] getAccumulatedProbabilities() {
+		// return accumulatedProbabilities;
+		// }
+		//
+		// public void setAccumulatedProbabilities(
+		// double[] accumulatedProbabilities) {
+		// this.accumulatedProbabilities = accumulatedProbabilities;
+		// }
 
 	}
 
@@ -115,9 +126,13 @@ public class ViterbiTable {
 		POSTag state = null;
 		for (ViterbiTableColumnEntry entry : endingStates) {
 			state = entry.getEndState();
-			entry.getOutSequence()[0].accumulatedProbabilities[0] = initialProbVec
-					.getInitialProbability(state);
-			entry.getOutSequence()[0].computeMaxProbability();
+			// entry.getOutSequence()[0].accumulatedProbabilities[0] =
+			// initialProbVec
+			// .getInitialProbability(state);
+			// entry.getOutSequence()[0].computeMaxProbability();
+			entry.getOutSequence()[0].maxProbability = Math.log(initialProbVec
+					.getInitialProbability(state));
+			entry.getOutSequence()[0].stateWithMaxProb = state.getIndex();
 			// System.out.println(entry.getEndState().getName()+": "+
 			// entry.getOutSequence()[0].getMaxProbability());
 		}

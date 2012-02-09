@@ -32,7 +32,7 @@ public class ModelParameterEstimater {
 				+ parameters.getTagSet().getSize());
 //		System.out.println("Number of observations:"
 //				+ parameters.getObservationSet().getObservations().size());
-		// parameters.getTagSet().print();
+//		 parameters.getTagSet().print();
 //		System.out.println("Transition Matrix has "
 //				+ parameters.getTransitionMatrix().getSize());
 		// parameters.getTransitionMatrix().print();

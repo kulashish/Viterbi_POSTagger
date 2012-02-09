@@ -61,8 +61,9 @@ public class EmissionMatrix {
 			if (null == foundRowEntry) {
 				foundRowEntry = new EmissionMatrixRowEntry(word);
 				transitions.put(word, foundRowEntry);
-			} else
-				foundRowEntry.update();
+				sum++;
+			}
+			foundRowEntry.update();
 			sum++;
 		}
 
@@ -122,10 +123,11 @@ public class EmissionMatrix {
 				.get(tag);
 
 		EmissionMatrixRowEntry foundRowEntry = null;
-		if (null != foundColumnEntry)
+		if (null != foundColumnEntry) {
 			foundRowEntry = foundColumnEntry.getTransitions().get(observation);
-		if (null != foundRowEntry)
-			val = foundRowEntry.getProbability();
+			val = null != foundRowEntry ? foundRowEntry.getProbability()
+					: 1.0f / (foundColumnEntry.sum + 1);
+		}
 		return val;
 	}
 }

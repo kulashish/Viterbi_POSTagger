@@ -9,11 +9,11 @@ public class ModelParameters {
 	private ObservationSet observationSet;
 
 	public ModelParameters() {
-		tagSet = new POSTagSet();
+		tagSet = POSTagSet.getPOSTagSet();
 		transitionMatrix = new TransitionMatrix();
 		emissionMatrix = new EmissionMatrix();
 		initialProbVec = new InitialProbabilityVector();
-		observationSet = new ObservationSet();
+		observationSet = ObservationSet.getObservationSet();
 	}
 
 	public ObservationSet getObservationSet() {
@@ -42,6 +42,10 @@ public class ModelParameters {
 		Observation observation = null;
 		for (int i = 0; i < tags.length; i++) {
 			tag = tagSet.addTag(tags[i]);
+			if (tag.getIndex() == 225) {
+				System.out.println("TAG: " + tag.getName());
+				System.out.println("OBSERVATION: " + observations[i]);
+			}
 			observation = observationSet.addObservation(observations[i]);
 			if (null == prevTag)
 				initialProbVec.addState(tag);

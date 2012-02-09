@@ -27,10 +27,11 @@ public class TransitionMatrix {
 		TransitionMatrixColumnEntry foundColumnEntry = getTransitionProbMatrix()
 				.get(tag1);
 		TransitionMatrixRowEntry foundRowEntry = null;
-		if (null != foundColumnEntry)
+		if (null != foundColumnEntry) {
 			foundRowEntry = foundColumnEntry.getTransitions().get(tag2);
-		if (null != foundRowEntry)
-			val = foundRowEntry.getProbability();
+			val = null != foundRowEntry ? foundRowEntry.getProbability()
+					: 1.0f / (1 + foundColumnEntry.sum);
+		}
 		return val;
 	}
 
@@ -91,8 +92,9 @@ public class TransitionMatrix {
 			if (null == foundRowEntry) {
 				foundRowEntry = new TransitionMatrixRowEntry(tag);
 				transitions.put(tag, foundRowEntry);
-			} else
-				foundRowEntry.update();
+				sum++;
+			}
+			foundRowEntry.update();
 			sum++;
 		}
 
