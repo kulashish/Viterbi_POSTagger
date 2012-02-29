@@ -59,7 +59,7 @@ public class TransitionMatrix {
 			columnEntry.print();
 	}
 
-	private class TransitionMatrixColumnEntry {
+	class TransitionMatrixColumnEntry {
 		private POSTag postag;
 		private Map<POSTag, TransitionMatrixRowEntry> transitions;
 		private int sum;
@@ -110,7 +110,7 @@ public class TransitionMatrix {
 
 	}
 
-	private class TransitionMatrixRowEntry {
+	class TransitionMatrixRowEntry {
 		private POSTag postag;
 		private float probability;
 

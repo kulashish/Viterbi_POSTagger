@@ -14,12 +14,16 @@ public class Corpus {
 	}
 
 	public Corpus(String trainingPath, String testPath) {
-		File trainingFile = new File(trainingPath);
-		File testFile = new File(testPath);
-		for (File file : trainingFile.listFiles())
-			addTaggedDocument(file);
-		for (File file : testFile.listFiles())
-			addTestDocument(file);
+		if (null != trainingPath) {
+			File trainingFile = new File(trainingPath);
+			for (File file : trainingFile.listFiles())
+				addTaggedDocument(file);
+		}
+		if (null != testPath) {
+			File testFile = new File(testPath);
+			for (File file : testFile.listFiles())
+				addTestDocument(file);
+		}
 	}
 
 	private void addTestDocument(File file) {

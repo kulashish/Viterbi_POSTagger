@@ -36,7 +36,7 @@ public class EmissionMatrix {
 			columnEntry.computeProbabilities();
 	}
 
-	private class EmissionMatrixColumnEntry {
+	class EmissionMatrixColumnEntry {
 		private POSTag postag;
 		private Map<Observation, EmissionMatrixRowEntry> transitions;
 		private int sum = 0;
@@ -78,7 +78,7 @@ public class EmissionMatrix {
 		}
 	}
 
-	private class EmissionMatrixRowEntry {
+	class EmissionMatrixRowEntry {
 		private Observation word;
 		private float probability;
 

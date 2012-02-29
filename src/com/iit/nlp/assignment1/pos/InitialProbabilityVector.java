@@ -52,7 +52,7 @@ public class InitialProbabilityVector {
 		return prob;
 	}
 
-	private class InitialProbabilityVectorEntry {
+	class InitialProbabilityVectorEntry {
 		private POSTag tag;
 		private float probability;
 

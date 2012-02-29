@@ -5,6 +5,11 @@ public class POSTag implements Comparable<POSTag> {
 	private String name;
 	private int index;
 
+	public POSTag(int i, String tag) {
+		index = i;
+		name = tag;
+	}
+
 	public POSTag(String tag) {
 		name = tag;
 	}

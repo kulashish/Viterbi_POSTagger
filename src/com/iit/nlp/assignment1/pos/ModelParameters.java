@@ -36,6 +36,26 @@ public class ModelParameters {
 		return initialProbVec;
 	}
 
+	public void setTagSet(POSTagSet tagSet) {
+		this.tagSet = tagSet;
+	}
+
+	public void setTransitionMatrix(TransitionMatrix transitionMatrix) {
+		this.transitionMatrix = transitionMatrix;
+	}
+
+	public void setEmissionMatrix(EmissionMatrix emissionMatrix) {
+		this.emissionMatrix = emissionMatrix;
+	}
+
+	public void setInitialProbVec(InitialProbabilityVector initialProbVec) {
+		this.initialProbVec = initialProbVec;
+	}
+
+	public void setObservationSet(ObservationSet observationSet) {
+		this.observationSet = observationSet;
+	}
+
 	public void updateParameters(String[] tags, String[] observations) {
 		POSTag tag = null;
 		POSTag prevTag = null;

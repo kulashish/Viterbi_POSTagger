@@ -15,6 +15,10 @@ public class POSTagSet {
 		return tags;
 	}
 
+	public void loadTag(POSTag tag) {
+		getTags().add(tag);
+	}
+
 	public POSTag addTag(POSTag tag) {
 		getTags().add(tag);
 		tag.setIndex();
