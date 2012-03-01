@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import com.iit.nlp.assignment1.Result;
 import com.iit.nlp.assignment1.corpus.TaggedDocument;
 import com.iit.nlp.assignment1.pos.ViterbiTable.ViterbiTableColumnEntry;
 import com.iit.nlp.assignment1.pos.ViterbiTable.ViterbiTableRowEntry;
@@ -14,29 +15,17 @@ public class ViterbiAlgorithm {
 	private ViterbiTable viterbiTable;
 	private Observation[] observations;
 	private List<TaggedDocument> testDocuments;
-	private long taggedCorrectly = 0l;
-	private long totalLines = 0l;
-	private float accuracy = 0f;
-	private long observationsTaggedCorrectly = 0l;
-	private long totalObservations = 0l;
-	private float observationAccuracy = 0f;
+	private Result result;
 
 	public ViterbiAlgorithm(ModelParameters params,
 			List<TaggedDocument> documents) {
+		result = new Result();
 		modelParameters = params;
 		testDocuments = documents;
 		System.out.println("Testing on " + testDocuments.size() + " documents");
 	}
 
-	public float getObservationAccuracy() {
-		return observationAccuracy;
-	}
-
-	public float getAccuracy() {
-		return accuracy;
-	}
-
-	public float run() {
+	public Result run() {
 		POSTagExtracter extracter = new POSTagExtracter();
 		String line = null;
 		String[] words = null;
@@ -53,7 +42,7 @@ public class ViterbiAlgorithm {
 					init(modelParameters.getObservationSet().getObservations(
 							words));
 					tags = postag();
-					updateAccuracy(originalTags, tags);
+					updateAccuracy(originalTags, tags, words);
 				}
 				System.out.println();
 				document.closeReader();
@@ -62,22 +51,25 @@ public class ViterbiAlgorithm {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Correct: " + taggedCorrectly + "--- Total : "
-				+ totalLines);
-		return accuracy;
+		return result;
 	}
 
-	private void updateAccuracy(POSTag[] originalTags, POSTag[] tags) {
-		totalLines++;
-		totalObservations += tags.length;
-		int diff = modelParameters.getTagSet().compareTags(originalTags, tags);
-		if (diff == 0)
-			taggedCorrectly++;
-		observationsTaggedCorrectly += (Math.max(originalTags.length,
-				tags.length) - diff);
-		accuracy = taggedCorrectly * 1.0f / totalLines;
-		observationAccuracy = observationsTaggedCorrectly * 1.0f
-				/ totalObservations;
+	private void updateAccuracy(POSTag[] originalTags, POSTag[] tags,
+			String[] words) {
+		result.incrementTotalLines();
+		result.incrementObservations(tags.length);
+		List<Integer> diff = modelParameters.getTagSet().compareTags(
+				originalTags, tags);
+		if (diff.size() == 0)
+			result.incrementTaggedCorrectly();
+		result.incrementObservationsTaggedCorrectly(Math.max(
+				originalTags.length, tags.length) - diff.size());
+		for (int i : diff) {
+			result.addError(words[i], originalTags[i], tags[i]);
+		}
+		// observationsTaggedCorrectly += (Math.max(originalTags.length,
+		// tags.length) - diff);
+		result.computeAccuracy();
 	}
 
 	public void init(Observation[] words) {

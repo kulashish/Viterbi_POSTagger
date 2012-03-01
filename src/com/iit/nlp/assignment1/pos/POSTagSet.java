@@ -1,6 +1,8 @@
 package com.iit.nlp.assignment1.pos;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -69,13 +71,16 @@ public class POSTagSet {
 		return postags;
 	}
 
-	public int compareTags(POSTag[] tagset1, POSTag[] tagset2) {
+	public List<Integer> compareTags(POSTag[] tagset1, POSTag[] tagset2) {
 		int difference = Math.abs(tagset1.length - tagset2.length);
 		int minsize = Math.min(tagset1.length, tagset2.length);
+		List<Integer> mismatchList = new ArrayList<Integer>();
 		for (int index = 0; index < minsize; index++)
-			if (!tagset1[index].equals(tagset2[index]))
+			if (!tagset1[index].equals(tagset2[index])) {
 				difference++;
-		return difference;
+				mismatchList.add(index);
+			}
+		return mismatchList;
 	}
 
 	public static POSTagSet getPOSTagSet() {

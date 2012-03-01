@@ -64,11 +64,8 @@ public class POSTagger {
 	private void test(ModelParameters params) {
 		ViterbiAlgorithm viterbi = new ViterbiAlgorithm(params,
 				corpus.getTestDocuments());
-		float lineaccuracy = 0f;
-		lineaccuracy = viterbi.run();
-		System.out.println("Line Accuracy : " + lineaccuracy);
-		System.out.println("Word accuracy : "
-				+ viterbi.getObservationAccuracy());
+		Result result = viterbi.run();
+		result.print();
 	}
 
 	private void startTagging() throws IOException {
@@ -90,14 +87,15 @@ public class POSTagger {
 		// + viterbi.getObservationAccuracy());
 		// }
 		//
-		ModelParameterEstimater parameterEstimater = new ModelParameterEstimater(
-				new ModelParameters(), corpus.getDocuments());
-		parameterEstimater.estimate();
-		ViterbiAlgorithm viterbi = new ViterbiAlgorithm(
-				parameterEstimater.getParameters(), corpus.getTestDocuments());
-		lineaccuracy = viterbi.run();
-		System.out.println("Line Accuracy : " + lineaccuracy);
-		System.out.println("Word accuracy : "
-				+ viterbi.getObservationAccuracy());
+		// ModelParameterEstimater parameterEstimater = new
+		// ModelParameterEstimater(
+		// new ModelParameters(), corpus.getDocuments());
+		// parameterEstimater.estimate();
+		// ViterbiAlgorithm viterbi = new ViterbiAlgorithm(
+		// parameterEstimater.getParameters(), corpus.getTestDocuments());
+		// lineaccuracy = viterbi.run();
+		// System.out.println("Line Accuracy : " + lineaccuracy);
+		// System.out.println("Word accuracy : "
+		// + viterbi.getObservationAccuracy());
 	}
 }
