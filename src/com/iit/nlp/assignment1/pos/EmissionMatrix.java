@@ -18,6 +18,19 @@ public class EmissionMatrix {
 		return emissionProbMatrix;
 	}
 
+	public void loadEmission(POSTag tag, Observation observation, int sum,
+			float probability) {
+		EmissionMatrixColumnEntry foundColumnEntry = getEmissionProbMatrix()
+				.get(tag);
+
+		if (null == foundColumnEntry) {
+			foundColumnEntry = new EmissionMatrixColumnEntry(tag);
+			emissionProbMatrix.put(tag, foundColumnEntry);
+		}
+		foundColumnEntry.setSum(sum);
+		foundColumnEntry.loadTransition(observation, probability);
+	}
+
 	public void addEmission(POSTag tag, Observation word) {
 		EmissionMatrixColumnEntry foundColumnEntry = getEmissionProbMatrix()
 				.get(tag);
@@ -46,9 +59,24 @@ public class EmissionMatrix {
 			sum = 0;
 		}
 
+		public void loadTransition(Observation observation, float probability) {
+			EmissionMatrixRowEntry entry = new EmissionMatrixRowEntry(
+					observation);
+			getTransitions().put(observation, entry);
+			entry.setProbability(probability);
+		}
+
 		public void computeProbabilities() {
 			for (EmissionMatrixRowEntry rowEntry : transitions.values())
 				rowEntry.computeProbability(sum);
+		}
+
+		public int getSum() {
+			return sum;
+		}
+
+		public void setSum(int sum) {
+			this.sum = sum;
 		}
 
 		public POSTag getPostag() {

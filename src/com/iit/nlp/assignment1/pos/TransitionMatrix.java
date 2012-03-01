@@ -35,6 +35,19 @@ public class TransitionMatrix {
 		return val;
 	}
 
+	public void loadTransition(POSTag tag1, POSTag tag2, int sum,
+			float probability) {
+		TransitionMatrixColumnEntry foundColumnEntry = getTransitionProbMatrix()
+				.get(tag1);
+
+		if (null == foundColumnEntry) {
+			foundColumnEntry = new TransitionMatrixColumnEntry(tag1);
+			transitionProbMatrix.put(tag1, foundColumnEntry);
+		}
+		foundColumnEntry.setSum(sum);
+		foundColumnEntry.loadTransition(tag2, probability);
+	}
+
 	public void addTransition(POSTag tag1, POSTag tag2) {
 		TransitionMatrixColumnEntry foundColumnEntry = getTransitionProbMatrix()
 				.get(tag1);
@@ -82,6 +95,14 @@ public class TransitionMatrix {
 				rowEntry.computeProbability(sum);
 		}
 
+		public int getSum() {
+			return sum;
+		}
+
+		public void setSum(int sum) {
+			this.sum = sum;
+		}
+
 		public POSTag getPostag() {
 			return postag;
 		}
@@ -96,6 +117,12 @@ public class TransitionMatrix {
 			}
 			foundRowEntry.update();
 			sum++;
+		}
+
+		public void loadTransition(POSTag tag, float probability) {
+			TransitionMatrixRowEntry entry = new TransitionMatrixRowEntry(tag);
+			getTransitions().put(tag, entry);
+			entry.setProbability(probability);
 		}
 
 		public void setPostag(POSTag postag) {

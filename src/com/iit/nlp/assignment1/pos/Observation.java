@@ -10,6 +10,11 @@ public class Observation {
 		index = count++;
 	}
 
+	public Observation(int i, String name) {
+		index = i;
+		this.name = name;
+	}
+
 	public String getName() {
 		return name;
 	}

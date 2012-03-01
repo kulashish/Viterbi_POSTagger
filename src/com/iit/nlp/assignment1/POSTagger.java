@@ -35,15 +35,23 @@ public class POSTagger {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		} else if (args[0].equalsIgnoreCase("-test")) {
+			String modelParamFilePath = args[1];
+			String testCorpusPath = args[2];
+			MPPersistence persistence = new MPPersistence(modelParamFilePath);
+			ModelParameters params = persistence.loadParameters();
+			Corpus corpus = new Corpus(null, testCorpusPath);
+			POSTagger tagger = new POSTagger(corpus);
+			tagger.test(params);
 		}
-//		Corpus corpus = new Corpus(args[0], args[1]);
-//		POSTagger postagger = new POSTagger(corpus);
-//		try {
-//			postagger.startTagging();
-//		} catch (IOException e) {
-//
-//			e.printStackTrace();
-//		}
+		// Corpus corpus = new Corpus(args[0], args[1]);
+		// POSTagger postagger = new POSTagger(corpus);
+		// try {
+		// postagger.startTagging();
+		// } catch (IOException e) {
+		//
+		// e.printStackTrace();
+		// }
 	}
 
 	private ModelParameters train() throws IOException {
@@ -51,6 +59,16 @@ public class POSTagger {
 				new ModelParameters(), corpus.getDocuments());
 		parameterEstimater.estimate();
 		return parameterEstimater.getParameters();
+	}
+
+	private void test(ModelParameters params) {
+		ViterbiAlgorithm viterbi = new ViterbiAlgorithm(params,
+				corpus.getTestDocuments());
+		float lineaccuracy = 0f;
+		lineaccuracy = viterbi.run();
+		System.out.println("Line Accuracy : " + lineaccuracy);
+		System.out.println("Word accuracy : "
+				+ viterbi.getObservationAccuracy());
 	}
 
 	private void startTagging() throws IOException {

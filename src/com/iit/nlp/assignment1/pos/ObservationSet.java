@@ -14,6 +14,10 @@ public class ObservationSet {
 		return observations;
 	}
 
+	public void loadObservation(Observation observation) {
+		getObservations().put(observation.getName(), observation);
+	}
+
 	public Observation addObservation(String word) {
 		Observation observation = getObservations().get(word);
 		if (null == observation) {

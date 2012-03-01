@@ -18,6 +18,21 @@ public class InitialProbabilityVector {
 		}
 	}
 
+	public int getSum() {
+		return sum;
+	}
+
+	public void setSum(int sum) {
+		this.sum = sum;
+	}
+
+	public void loadState(POSTag tag, float probability) {
+		InitialProbabilityVectorEntry entry = new InitialProbabilityVectorEntry(
+				tag);
+		getInitialProbList().put(tag, entry);
+		entry.setProbability(probability);
+	}
+
 	public void addState(POSTag tag) {
 		InitialProbabilityVectorEntry foundEntry = getInitialProbList()
 				.get(tag);
