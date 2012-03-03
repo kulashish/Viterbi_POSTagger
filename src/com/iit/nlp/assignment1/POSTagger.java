@@ -19,7 +19,11 @@ public class POSTagger {
 	public static void main(String... args) {
 		if (null == args || args.length < 2) {
 			System.out
-					.println("Usage: java POSTagger <TRAINING_CORPUS_PATH> <TEST_CORPUS_PATH");
+					.println("Usage: java POSTagger <TRAINING_CORPUS_PATH> <TEST_CORPUS_PATH>");
+			System.out
+			.println("Usage: java POSTagger -train <TRAINING_CORPUS_PATH> <MODEL_PARAM_PATH>");
+			System.out
+			.println("Usage: java POSTagger -test <MODEL_PARAM_PATH> <TEST_CORPUS_PATH>");
 			System.exit(1);
 		}
 		if (args[0].equalsIgnoreCase("-train")) {
@@ -43,15 +47,16 @@ public class POSTagger {
 			Corpus corpus = new Corpus(null, testCorpusPath);
 			POSTagger tagger = new POSTagger(corpus);
 			tagger.test(params);
+		} else {
+			Corpus corpus = new Corpus(args[0], args[1]);
+			POSTagger postagger = new POSTagger(corpus);
+			try {
+				postagger.startTagging();
+			} catch (IOException e) {
+
+				e.printStackTrace();
+			}
 		}
-		// Corpus corpus = new Corpus(args[0], args[1]);
-		// POSTagger postagger = new POSTagger(corpus);
-		// try {
-		// postagger.startTagging();
-		// } catch (IOException e) {
-		//
-		// e.printStackTrace();
-		// }
 	}
 
 	private ModelParameters train() throws IOException {
@@ -70,7 +75,6 @@ public class POSTagger {
 
 	private void startTagging() throws IOException {
 		// float acc[] = new float[5];
-		float lineaccuracy = 0f;
 		// for (int i = 0; i < 5; i++) {
 		// System.out.println("Iteration " + (i + 1));
 		// ModelParameterEstimater parameterEstimater = new
@@ -87,15 +91,12 @@ public class POSTagger {
 		// + viterbi.getObservationAccuracy());
 		// }
 		//
-		// ModelParameterEstimater parameterEstimater = new
-		// ModelParameterEstimater(
-		// new ModelParameters(), corpus.getDocuments());
-		// parameterEstimater.estimate();
-		// ViterbiAlgorithm viterbi = new ViterbiAlgorithm(
-		// parameterEstimater.getParameters(), corpus.getTestDocuments());
-		// lineaccuracy = viterbi.run();
-		// System.out.println("Line Accuracy : " + lineaccuracy);
-		// System.out.println("Word accuracy : "
-		// + viterbi.getObservationAccuracy());
+		ModelParameterEstimater parameterEstimater = new ModelParameterEstimater(
+				new ModelParameters(), corpus.getDocuments());
+		parameterEstimater.estimate();
+		ViterbiAlgorithm viterbi = new ViterbiAlgorithm(
+				parameterEstimater.getParameters(), corpus.getTestDocuments());
+		Result result = viterbi.run();
+		result.print();
 	}
 }

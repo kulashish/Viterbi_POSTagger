@@ -1,6 +1,7 @@
 package com.iit.nlp.assignment1.pos;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -58,14 +59,21 @@ public class ViterbiAlgorithm {
 			String[] words) {
 		result.incrementTotalLines();
 		result.incrementObservations(tags.length);
-		List<Integer> diff = modelParameters.getTagSet().compareTags(
-				originalTags, tags);
+		List<Integer> diff = new ArrayList<Integer>();
+		if (originalTags.length > 1)
+			diff = modelParameters.getTagSet().compareTags(originalTags, tags);
+		else
+			for (int i = 0; i < tags.length; i++)
+				diff.add(i);
 		if (diff.size() == 0)
 			result.incrementTaggedCorrectly();
 		result.incrementObservationsTaggedCorrectly(Math.max(
 				originalTags.length, tags.length) - diff.size());
 		for (int i : diff) {
-			result.addError(words[i], originalTags[i], tags[i]);
+			if (originalTags.length > 1)
+				result.addError(words[i], originalTags[i], tags[i]);
+			else
+				result.addError(words[i], null, tags[i]);
 		}
 		// observationsTaggedCorrectly += (Math.max(originalTags.length,
 		// tags.length) - diff);

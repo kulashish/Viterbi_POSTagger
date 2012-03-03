@@ -21,7 +21,9 @@ public class POSTagExtracter {
 		while (matcher.find()) {
 			tag = matcher.group();
 			if (matcher.end() == input.length()
-					|| input.charAt(matcher.end()) == ' ')	// A tag cannot be followed by a space
+					|| input.charAt(matcher.end()) == ' ') // A tag cannot be
+															// followed by a
+															// space
 				continue;
 			tag = tag.substring(0, tag.indexOf('_'));
 			tags.add(tag);
@@ -31,11 +33,15 @@ public class POSTagExtracter {
 
 	public String[] words(String input) {
 		String[] words = POSTagPattern.split(input);
+		if (words.length == 1) { // split on space as word boundary
+			words = (" " + input).split("\\s+");
+		}
 		List<String> wordList = new ArrayList<String>();
 		for (int i = 1; i < words.length; i++) {
-			if (words[i].charAt(0) == ' ')			// A word cannot start with a space
+			if (words[i].charAt(0) == ' ') // A word cannot start with a space
 				continue;
-			if (words[i].indexOf('<') != -1)		// take care of junk XML tags in corpus
+			if (words[i].indexOf('<') != -1) // take care of junk XML tags in
+												// corpus
 				words[i] = words[i].substring(0, words[i].indexOf('<'));
 			wordList.add(words[i].trim());
 		}
@@ -44,7 +50,9 @@ public class POSTagExtracter {
 
 	public static void main(String... args) {
 		POSTagExtracter extracter = new POSTagExtracter();
-		String input = "TO0_To VVI_win AT0_a NN1_prize VVB_send AVP_in DPS_your NN2_captions PRP_as well as DT0_any NN2_photographs PNP_you VVB_think VM0_could VVI_feature PRP-AVP_in DT0_this NN1_section PRP_to PUN_: OUP_ <hi rend=it NN2_Dogs AV0_Today </hi_ <gap desc=address resp=OUP_";
+		// String input =
+		// "TO0_To VVI_win AT0_a NN1_prize VVB_send AVP_in DPS_your NN2_captions PRP_as well as DT0_any NN2_photographs PNP_you VVB_think VM0_could VVI_feature PRP-AVP_in DT0_this NN1_section PRP_to PUN_: OUP_ <hi rend=it NN2_Dogs AV0_Today </hi_ <gap desc=address resp=OUP_";
+		String input = "To win a prize send in your captions";
 		String[] matches = extracter.tags(input);
 		System.out.println(matches.length);
 		for (String match : matches)

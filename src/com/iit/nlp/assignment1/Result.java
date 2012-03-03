@@ -60,8 +60,10 @@ public class Result {
 		System.out.println("Accuracy: " + getObservationAccuracy());
 		System.out.println("Error List - ");
 		for (ErrorEntry entry : errorList) {
-			System.out.println(entry.word + ":" + entry.correctTag.getName()
-					+ ":" + entry.wrongTag.getName());
+			System.out.println(entry.word
+					+ ":"
+					+ (null != entry.correctTag ? entry.correctTag.getName()
+							: "") + ":" + entry.wrongTag.getName());
 		}
 	}
 
